@@ -5,7 +5,6 @@
 
 matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft"){
   
-  library(MASS)
   library(Robgit)
   library(Gmedian)
   
