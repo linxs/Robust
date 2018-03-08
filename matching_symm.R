@@ -5,6 +5,7 @@
 
 matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft"){
   
+  library(MASS)
   library(Robgit)
   library(Gmedian)
   
@@ -21,10 +22,14 @@ matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft
   Mcl<-Mc[,,side=="L"]
   Mcr<-Mc[,,side=="R"]
   
-  dv<-Mcl-Mcr
+  dv<-Mcr-Mcl
   
-  ang.par<-atan(dv[,2,]/dv[,1,])#angulo en radianes
-  par.mat<-apply(ang.par,c(1,2),function(x)if(x<0) {pi-abs(x)}else{x})#esto hace que los ángulos sean todos positivos entre 0 y pi
+  mod<-sqrt((dv[,1,]^2)+(dv[,2,]^2))#norma
+  N<-aperm(array(mod,c(dim(dv)[1],n,2)),c(1,3,2))#crea array con la norma repetida, para operar con el array de vectores (abajo)
+  ndv<-dv/N #normaliza los vectores diferencia
+  ndvp<-aperm(apply(ndv,c(1,3),function(x)if(x[2]<0) {x<-x*-1}else{x<-x}),c(2,1,3))#hace primera componente positiva
+  par.mat<-acos(ndvp[,1,])#calcula el angulo que corresponde al componente de cada vector sobre x
+
   
   dr<-apply(par.mat,2,median)#saca la dirección mediana (aún en radianes)
   vr<-cbind(cos(dr),sin(dr))#vectores unitarios definidos por sus proyecciones sobre x e y a partir de seno y coseno del angulo de menores proyecciones
@@ -37,12 +42,12 @@ matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft
   }
   
   S<-array(t(c(Mcr,Ur)),c(nl,2,(n*2)))
-  print("please wait...",quote = F)
+  print("performing final robust superimposition...",quote = F)
   sink("/dev/null")
   U<-robgit(S)#un ajuste robusto para eliminar pequeñas diferencias
   sink()
-  Ui<-U[,,1:n]
-  Ud<-U[,,(n+1):(n*2)]
+  Ud<-U[,,1:n]
+  Ui<-U[,,(n+1):(n*2)]
   
   #saca contrib % de cada punto
   distances<-dist.contrib(mc=Ui,mre=Ud)

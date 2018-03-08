@@ -18,7 +18,7 @@ plot.result<-function(mc=NULL,mre=NULL,mt=NULL,nconf,object=TRUE,legloc="topleft
       points(0,0,pch=3)#centro (0,0)
       points(mre[,,c],col="red",pch=20,cex=0.8)#reflejada
       text(mc[,1,c],mc[,2,c],c(seq(1:dim(mc)[1])),pos=2,offset=0.5,cex=0.55)
-      legend(x=legloc,c("Left","Right"),pch=c(20,1) ,col = c("black","red"), cex=0.7)
+      legend(x=legloc,c("Left","Right"),pch=c(20,1) ,col = c("red","black"), cex=0.7)
     }
   }
   

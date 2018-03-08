@@ -8,6 +8,9 @@ dist.contrib<-function(mc=NULL,mre=NULL){
   results<-array(0,c(dim(mc)))
   results[,1,]<-round(eudist,digits=6)
   results[,2,]<-perc
+  mvar<-mean(apply(eudist,2,var))
+  
+  print(paste("Residuals mean variance: ",round(mvar,digits = 6)),quote = F)
   
   print("Distance and % contribution to total (euclidean) distance between sides for each config:",quote = F)
   print(results)

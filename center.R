@@ -8,7 +8,7 @@ center<-function(A,cent){
          gmed<-t(apply(A,c(3), function(x) Weiszfeld(x)))
          for(i in 1:ni){
            Mc[,,i]<-t(t(A[,,i])-c(gmed[[i]][[1]]))
-         }    
+         }
          }
   )
   return(Mc)
