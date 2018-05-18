@@ -18,20 +18,23 @@ object.symm<-function(A,ctr="gmedian",prs.file="pairs.txt",proj.met="msum",legen
   Ac<-center(A,cent=ctr)
   
   #lee la base y crea matrices para sagitales y para cada lado, izquierdo y derecho (en el txt están ordenados así)
-  m0<-Ac[1:ns,,]
-  m1<-Ac[(ns+1):((ns+1)+(np/2)-1),,]
-  m2<-Ac[((ns+1)+(np/2)):((ns)+(np)),,]
+  m0<-Ac[1:ns,,,drop=FALSE]
+  m1<-Ac[(ns+1):((ns+1)+(np/2)-1),,,drop=FALSE]
+  m2<-Ac[((ns+1)+(np/2)):((ns)+(np)),,,drop=FALSE]
   
   #puntos sagitales
   pares.sag<-t(combn(1:ns,2))# aca hace la combinatoria del n de orden de los sagitales tomados de a 2
-  vs<-m0[pares.sag[,1],,]-m0[pares.sag[,2],,]#obtiene los vectores de direcciones sagitales para los pares.sag
-  mod<-sqrt((vs[,1,]^2)+(vs[,2,]^2))#norma
+  
+  
+  vs<-m0[pares.sag[,1],,,drop=FALSE]-m0[pares.sag[,2],,,drop=FALSE]#obtiene los vectores de direcciones sagitales para los pares.sag
+  
+  mod<-as.matrix(sqrt((vs[,1,]^2)+(vs[,2,]^2)))#norma
   N<-aperm(array(mod,c(dim(pares.sag)[1],n,2)),c(1,3,2))#crea array con la norma repetida, para operar con el array de vectores (abajo)
   vsn<-vs/N#vectores sagitales normalizados
 
   
   #puntos pareados
-  vp<-m1[pares[,1]-ns,,]-m2[pares[,2]-ns-(np/2),,]
+  vp<-m1[pares[,1]-ns,,,drop=FALSE]-m2[pares[,2]-ns-(np/2),,,drop=FALSE]
   
   # proyecta y ordena las direcciones sagitales por proyeccion
 

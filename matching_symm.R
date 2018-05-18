@@ -1,16 +1,13 @@
 #Esta funcion acepta un array A de dimensiones  pxkx2*n (n de landmarks, dimensiones, por ahora 2, y n de especimenes, cada uno con dos configuraciones)
 #Las configuraciones deben estar ordenadas por individuo: lado I del ind 1, luego lado D del ind 1, etc...
-#Lee del dir de trabajo un archivo (por defecto llamado "side.txt") que es una lista del lado de cada config de A (DEBE usar L y R para izquierda y derecha)
 #ctr puede tomar los valores "gmedian"(mediana espacial", "median" (mediana cac) y "mean" (media))
 
-matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft"){
+matching.symm<-function(A,ctr="gmedian",legend.loc="topleft"){
   
   library(MASS)
   library(Robgit)
   library(Gmedian)
-  
-  side<-read.table(side.file,sep=" ",header=F)
-  nd<-length(A[1,,1])#numero de dimensiones
+ 
   nl<-length(A[,1,1])#numero de landmarks
   n<-dim(A)[3]/2
 
@@ -19,16 +16,17 @@ matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft
  
   #---------- crea arrays por lado
   
-  Mcl<-Mc[,,side=="L"]
-  Mcr<-Mc[,,side=="R"]
+  side<-c(1,2)
+  Mcl<-Mc[,,side==1,drop=FALSE]
+  Mcr<-Mc[,,side==2,drop=FALSE]
   
   dv<-Mcr-Mcl
   
-  mod<-sqrt((dv[,1,]^2)+(dv[,2,]^2))#norma
+  mod<-as.matrix(sqrt((dv[,1,]^2)+(dv[,2,]^2)))#norma
   N<-aperm(array(mod,c(dim(dv)[1],n,2)),c(1,3,2))#crea array con la norma repetida, para operar con el array de vectores (abajo)
   ndv<-dv/N #normaliza los vectores diferencia
   ndvp<-aperm(apply(ndv,c(1,3),function(x)if(x[2]<0) {x<-x*-1}else{x<-x}),c(2,1,3))#hace primera componente positiva
-  par.mat<-acos(ndvp[,1,])#calcula el angulo que corresponde al componente de cada vector sobre x
+  par.mat<-as.matrix(acos(ndvp[,1,]))#calcula el angulo que corresponde al componente de cada vector sobre x
 
   
   dr<-apply(par.mat,2,median)#saca la dirección mediana (aún en radianes)
@@ -46,13 +44,14 @@ matching.symm<-function(A,ctr="gmedian",side.file="side.txt",legend.loc="topleft
   sink("/dev/null")
   U<-robgit(S)#un ajuste robusto para eliminar pequeñas diferencias
   sink()
-  Ud<-U[,,1:n]
-  Ui<-U[,,(n+1):(n*2)]
+  Ud<-U[,,1:n,drop=FALSE]
+  Ui<-U[,,(n+1):(n*2),drop=FALSE]
   
   #saca contrib % de cada punto
   distances<-dist.contrib(mc=Ui,mre=Ud)
   
   #plots
+  
   plot.result(mc=Ud, mre =Ui, nconf = n,legloc = legend.loc,object=F)
   return(list(distances,Ui-Ud))
 }
