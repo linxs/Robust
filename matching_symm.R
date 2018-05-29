@@ -41,9 +41,7 @@ matching.symm<-function(A,ctr="gmedian",legend.loc="topleft"){
   
   S<-array(t(c(Mcr,Ur)),c(nl,2,(n*2)))
   print("performing final robust superimposition...",quote = F)
-  sink("/dev/null")
-  U<-robgit(S)#un ajuste robusto para eliminar pequeñas diferencias
-  sink()
+  capture.output(U<-robgit(S))#un ajuste robusto para eliminar pequeñas diferencias
   Ud<-U[,,1:n,drop=FALSE]
   Ui<-U[,,(n+1):(n*2),drop=FALSE]
   
